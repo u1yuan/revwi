@@ -176,6 +176,7 @@ create policy recency_select_own on public.question_recency for select using (au
 create or replace function public.guard_question_publish()
 returns trigger
 language plpgsql
+set search_path = public
 as $$
 begin
   if new.status = 'published' and old.status is distinct from 'published' then

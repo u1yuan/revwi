@@ -9,7 +9,7 @@
     "build": "npm run validate:bank && next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "node --experimental-strip-types scripts/seed-supabase.ts"
+    "seed": "node --env-file=.env --experimental-strip-types scripts/seed-supabase.ts"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",

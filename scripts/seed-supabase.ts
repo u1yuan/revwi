@@ -70,25 +70,6 @@ async function main() {
     'Summative Assessment 2': 'sa2',
   }
 
-  const included = curationRecords.filter((r) => r.status === 'included')
-  for (const record of included) {
-    const slug = assessmentSlugByLabel[record.assessment]
-    const assessmentId = slug ? assessmentIdBySlug.get(slug) : undefined
-    const questionId = record.canonicalQuestionId
-    if (!slug || !assessmentId || !questionId) {
-      throw new Error(`Cannot link bank item for ${record.assessment} #${record.sourceNumber}`)
-    }
-    const { error } = await supabase.from('bank_items').upsert(
-      {
-        assessment_id: assessmentId,
-        question_id: questionId,
-        source_number: record.sourceNumber,
-      },
-      { onConflict: 'assessment_id,question_id' },
-    )
-    if (error) throw error
-  }
-
   for (const question of questions) {
     const payload =
       question.type === 'matching'
@@ -115,6 +96,25 @@ async function main() {
       explanation: question.explanation,
     })
     if (keyError) throw keyError
+  }
+
+  const included = curationRecords.filter((r) => r.status === 'included')
+  for (const record of included) {
+    const slug = assessmentSlugByLabel[record.assessment]
+    const assessmentId = slug ? assessmentIdBySlug.get(slug) : undefined
+    const questionId = record.canonicalQuestionId
+    if (!slug || !assessmentId || !questionId) {
+      throw new Error(`Cannot link bank item for ${record.assessment} #${record.sourceNumber}`)
+    }
+    const { error } = await supabase.from('bank_items').upsert(
+      {
+        assessment_id: assessmentId,
+        question_id: questionId,
+        source_number: record.sourceNumber,
+      },
+      { onConflict: 'assessment_id,question_id' },
+    )
+    if (error) throw error
   }
 
   console.log(`Seeded ${questions.length} questions and ${included.length} bank_items.`)
