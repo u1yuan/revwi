@@ -25,7 +25,7 @@ export function publicFromRow(row: any): PublicQuestion {
 
 export function localBank(assessment: string): PublicQuestion[] {
   const label = assessment === 'sa2' ? 'Summative Assessment 2' : 'Midterm Exam'
-  const ids = new Set(curationRecords.filter((record) => record.status === 'included' && record.assessment === label).map((record) => record.canonicalQuestionId))
+  const ids = new Set(curationRecords.filter((record) => record.assessment === label && record.status !== 'excluded').map((record) => record.canonicalQuestionId ?? record.duplicateOf))
   const selected = questions.filter((q) => ids.has(q.id))
   return selected.map(publicFromLocal)
 }

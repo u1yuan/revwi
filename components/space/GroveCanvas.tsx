@@ -10,7 +10,7 @@ function CameraFit() {
   const { camera, size } = useThree()
   useEffect(() => {
     if (!('zoom' in camera)) return
-    camera.zoom = Math.min(size.width / 17, size.height / 8.5)
+    camera.zoom = Math.min(size.width / (size.width < 700 ? 9 : 17), size.height / 8.5)
     camera.updateProjectionMatrix()
   }, [camera, size])
   return null

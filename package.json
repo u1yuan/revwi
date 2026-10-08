@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0",
     "validate:bank": "node --experimental-strip-types scripts/validate-bank.ts",
+    "test:domain": "node --experimental-strip-types tests/quiz-core.test.ts",
     "build": "npm run validate:bank && next build",
     "start": "next start",
     "lint": "next lint",

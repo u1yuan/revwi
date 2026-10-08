@@ -37,7 +37,7 @@ export const staticCatalog: StaticYear[] = [
         assessments: [
           { slug: 'sa1', label: 'SA1', ordinal: 1, locked: true, questionCount: 0 },
           { slug: 'sa2', label: 'SA2', ordinal: 2, locked: false, questionCount: 50 },
-          { slug: 'midterm', label: 'Midterm Exam', ordinal: 3, locked: false, questionCount: 99 },
+          { slug: 'midterm', label: 'Midterm Exam', ordinal: 3, locked: false, questionCount: 89 },
           { slug: 'sa3', label: 'SA3', ordinal: 4, locked: true, questionCount: 0 },
           { slug: 'final', label: 'Final Exam', ordinal: 5, locked: true, questionCount: 0 },
         ],

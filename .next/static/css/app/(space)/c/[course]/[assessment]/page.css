@@ -1,0 +1,15 @@
+/*!***************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./components/quiz/chronicle.css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************/
+.chronicle-surface{min-height:100dvh;background:#f4f7fb;color:#14243a;padding:0 0 28px}
+.chronicle-main{width:min(1160px,calc(100% - 40px));margin:0 auto;min-height:calc(100dvh - 28px)}
+.chronicle-study-layout{display:grid;grid-template-columns:minmax(0,1fr) 160px;grid-gap:20px;gap:20px;align-items:start}
+.chronicle-study-layout>div{min-width:0}
+.chronicle-study-layout .seedling-dock{position:-webkit-sticky;position:sticky;top:20px}
+.history-card{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:20px;background:#fff;border:1px solid #d6e2ef;border-radius:12px;color:#14243a;text-decoration:none}
+.history-card:hover{border-color:#2457c5}
+.history-card span{color:#52647a}
+.chronicle-surface .exhibit button{display:block;width:100%;padding:0;border:0;background:transparent}
+.chronicle-surface button:disabled{cursor:not-allowed;opacity:.62}
+@media(max-width:760px){.chronicle-main{width:calc(100% - 32px)}.chronicle-study-layout{display:flex;flex-direction:column;gap:16px}.chronicle-study-layout>div{width:100%}.chronicle-study-layout .seedling-dock{position:static;align-self:center}}
+

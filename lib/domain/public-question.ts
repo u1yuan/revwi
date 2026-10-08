@@ -21,6 +21,11 @@ export function answerComplete(question: PublicQuestion, answer: number[]): bool
   return answer.length === question.requiredCount && new Set(answer).size === answer.length && answer.every((n) => Number.isInteger(n) && n >= 0 && n < question.choices.length)
 }
 
+export function validDraft(question: PublicQuestion, answer: number[]): boolean {
+  if (question.type === 'matching') return answer.length <= question.pairs.length && answer.every((n) => Number.isInteger(n) && n >= -1 && n < question.targets.length)
+  return answer.length <= question.requiredCount && new Set(answer).size === answer.length && answer.every((n) => Number.isInteger(n) && n >= 0 && n < question.choices.length)
+}
+
 export function answerText(question: PublicQuestion, answer: number[]): string {
   if (!answerComplete(question, answer)) return 'Skipped'
   return question.type === 'matching'

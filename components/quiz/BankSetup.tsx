@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { startAttempt } from '@/app/actions/attempts'
+import './chronicle.css'
 
 type Props = { course: string; assessment: string; label: string; assessmentId?: string; bank: { id: string; module: number }[]; activeId?: string }
 const moduleNames = ['Developer environment', 'DevNet resources', 'Software development', 'Understanding APIs']

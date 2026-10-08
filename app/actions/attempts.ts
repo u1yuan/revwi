@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createGradingClient } from '@/lib/server/grading'
 import { buildQuestionOrder, score } from '@/lib/domain/quiz-core'
-import { answerComplete, answerSchema } from '@/lib/domain/public-question'
+import { answerComplete, answerSchema, validDraft } from '@/lib/domain/public-question'
 import { publicFromRow, publicFromLocal } from '@/lib/server/question-catalog'
 import { supabaseConfigured } from '@/lib/supabase/env'
 
@@ -21,7 +21,9 @@ async function signedIn() {
   if (!supabaseConfigured()) return null
   const client = await createClient()
   const { data: { user } } = await client.auth.getUser()
-  return user ? { client, user } : null
+  if (!user) return null
+  const { data: profile } = await client.from('profiles').select('role').eq('user_id', user.id).maybeSingle()
+  return profile ? { client, user } : null
 }
 
 async function publishedQuestions(client: Awaited<ReturnType<typeof createClient>>, assessmentId: string) {
@@ -50,7 +52,7 @@ export async function startAttempt(raw: unknown): Promise<ActionResult<{ id: str
     if (!bank.length) return { ok: false, error: 'This bank has no published questions in those modules.' }
     if (length !== 'all' && length > bank.length) return { ok: false, error: `Only ${bank.length} questions are available.` }
     if (existing && replace) {
-      const { error } = await createGradingClient().from('attempts').update({ status: 'abandoned' }).eq('id', existing.id).eq('user_id', auth.user.id).in('status', ['asking', 'feedback'])
+      const { error } = await createGradingClient().rpc('abandon_attempt', { p_user_id: auth.user.id, p_attempt_id: existing.id })
       if (error) return { ok: false, error: error.message }
     }
     const ids = bank.map((q) => q.id)
@@ -71,6 +73,8 @@ export async function saveDraft(raw: unknown): Promise<ActionResult<null>> {
   const { attemptId, questionId, answer } = parsed.data
   const { data: attempt } = await auth.client.from('attempts').select('user_id,status,cursor,question_ids').eq('id', attemptId).maybeSingle()
   if (!attempt || attempt.user_id !== auth.user.id || attempt.status !== 'asking' || attempt.question_ids[attempt.cursor] !== questionId) return { ok: false, error: 'Question out of sync.' }
+  const { data: questionRow } = await auth.client.from('questions').select('id,module,topic,prompt,qtype,payload,citations,exhibit_path').eq('id', questionId).eq('status', 'published').maybeSingle()
+  if (!questionRow || !validDraft(publicFromRow(questionRow), answer)) return { ok: false, error: 'Invalid draft.' }
   const { error } = await createGradingClient().from('attempts').update({ draft: answer }).eq('id', attemptId).eq('user_id', auth.user.id).eq('status', 'asking').eq('cursor', attempt.cursor)
   return error ? { ok: false, error: error.message } : { ok: true, value: null }
 }
@@ -97,14 +101,14 @@ export async function submitAnswer(raw: unknown): Promise<SubmitResult> {
   if (previousError) return { ok: false, error: previousError.message }
   const prior = new Map((previous ?? []).map((e) => [e.question_id, e.correct]))
   if (prior.has(questionId)) return { ok: false, error: 'Answer already submitted.' }
-  const answered = attempt.question_ids.slice(0, attempt.cursor).map((id) => prior.get(id) === true)
+  const answered = attempt.question_ids.slice(0, attempt.cursor).map((id: string) => prior.get(id) === true)
   const scoreCount = answered.filter(Boolean).length + Number(correct)
   let streak = 0, bestStreak = 0
   for (const hit of [...answered, correct]) { streak = hit ? streak + 1 : 0; bestStreak = Math.max(bestStreak, streak) }
   const last = attempt.cursor === attempt.question_ids.length - 1
   const nextStatus = attempt.mode === 'prep' ? 'feedback' : last ? 'finished' : 'asking'
   const { error } = await grading.rpc('commit_attempt_submission', { p_user_id: auth.user.id, p_attempt_id: attemptId, p_question_id: questionId, p_answer: skipped ? [] : answer, p_skipped: skipped, p_correct: correct, p_next_status: nextStatus, p_score: scoreCount, p_best_streak: bestStreak })
-  if (error) return { ok: false, error: error.message }
+  if (error) return { ok: false, error: attempt.mode === 'exam' ? 'Could not save answer. Try again.' : error.message }
   if (attempt.mode === 'exam') return { ok: true, kind: 'saved', finished: last }
   const correctAnswer = question.type === 'matching'
     ? question.pairs.map((pair, i) => `${pair.term} → ${question.targets[(key as number[])[i]]}`).join('; ')
@@ -131,10 +135,10 @@ export async function retryMissed(raw: unknown): Promise<ActionResult<{ id: stri
   const { data: previous } = await auth.client.from('attempts').select('id,user_id,assessment_id,status,question_ids').eq('id', parsed.data.attemptId).maybeSingle()
   if (!previous || previous.user_id !== auth.user.id || previous.status !== 'finished') return { ok: false, error: 'Finished attempt not found.' }
   const { data: entries } = await auth.client.from('attempt_entries').select('question_id,correct').eq('attempt_id', previous.id)
-  const missed = previous.question_ids.filter((id) => entries?.find((e) => e.question_id === id)?.correct === false)
+  const missed = previous.question_ids.filter((id: string) => entries?.find((e) => e.question_id === id)?.correct === false)
   if (!missed.length) return { ok: false, error: 'No missed questions to retry.' }
   const published = new Set((await publishedQuestions(auth.client, previous.assessment_id)).map((q) => q.id))
-  const ids = missed.filter((id) => published.has(id))
+  const ids = missed.filter((id: string) => published.has(id))
   if (!ids.length) return { ok: false, error: 'Missed questions are no longer published.' }
   const { data: existing } = await auth.client.from('attempts').select('id').eq('assessment_id', previous.assessment_id).in('status', ['asking', 'feedback']).maybeSingle()
   if (existing) return { ok: false, error: 'Finish or replace your active attempt first.' }
@@ -143,6 +147,7 @@ export async function retryMissed(raw: unknown): Promise<ActionResult<{ id: stri
 }
 
 export async function gradeLocalPrep(raw: unknown): Promise<SubmitResult> {
+  if (supabaseConfigured()) return { ok: false, error: 'Local Prep is unavailable.' }
   const parsed = z.object({ questionId: z.string(), answer: answerSchema, skipped: z.boolean() }).safeParse(raw)
   if (!parsed.success) return { ok: false, error: 'Invalid answer.' }
   const { questions } = await import('@/src/questions')

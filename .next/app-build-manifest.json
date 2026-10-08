@@ -31,6 +31,7 @@
     "/(space)/c/[course]/[assessment]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
+      "static/css/app/(space)/c/[course]/[assessment]/page.css",
       "static/chunks/app/(space)/c/[course]/[assessment]/page.js"
     ],
     "/(space)/u/[year]/page": [
@@ -43,6 +44,12 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/welcome/page.js"
+    ],
+    "/(play)/c/[course]/[assessment]/play/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(play)/c/[course]/[assessment]/play/page.css",
+      "static/chunks/app/(play)/c/[course]/[assessment]/play/page.js"
     ]
   }
 }

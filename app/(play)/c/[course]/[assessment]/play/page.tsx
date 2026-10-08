@@ -2,9 +2,9 @@ import { notFound, redirect } from 'next/navigation'
 import PlaySession, { type RemoteState } from '@/components/quiz/PlaySession'
 import { localBank, publicFromRow } from '@/lib/server/question-catalog'
 import { findCourse } from '@/lib/catalog/static'
-import { createClient } from '@/lib/supabase/server'
 import { createGradingClient } from '@/lib/server/grading'
 import { supabaseConfigured } from '@/lib/supabase/env'
+import { requireUser } from '@/lib/server/auth'
 
 export default async function PlayPage({ params, searchParams }: { params: Promise<{ course: string; assessment: string }>; searchParams: Promise<{ attempt?: string }> }) {
   const { course: courseSlug, assessment: assessmentSlug } = await params
@@ -15,9 +15,7 @@ export default async function PlayPage({ params, searchParams }: { params: Promi
     if (!assessment || assessment.locked) notFound()
     return <PlaySession course={courseSlug} assessment={assessmentSlug} localBank={localBank(assessmentSlug)} />
   }
-  const client = await createClient()
-  const { data: { user } } = await client.auth.getUser()
-  if (!user) redirect(`/sign-in?next=${encodeURIComponent(`/c/${courseSlug}/${assessmentSlug}`)}`)
+  const { supabase: client, user } = await requireUser()
   if (!attemptId) redirect(`/c/${courseSlug}/${assessmentSlug}`)
   const { data: attempt } = await client.from('attempts').select('id,user_id,assessment_id,mode,status,question_ids,cursor,draft,score').eq('id', attemptId).maybeSingle()
   if (!attempt || attempt.user_id !== user.id) notFound()

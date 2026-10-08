@@ -1,9 +1,9 @@
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { findCourse } from '@/lib/catalog/static'
 import BankSetup from '@/components/quiz/BankSetup'
 import { localBank } from '@/lib/server/question-catalog'
-import { createClient } from '@/lib/supabase/server'
 import { supabaseConfigured } from '@/lib/supabase/env'
+import { requireUser } from '@/lib/server/auth'
 
 export default async function BankSetupPage({
   params,
@@ -17,9 +17,7 @@ export default async function BankSetupPage({
     if (!assessment || assessment.locked) notFound()
     return <BankSetup course={courseSlug} assessment={assessmentSlug} label={assessment.label} bank={localBank(assessmentSlug).map(({ id, module }) => ({ id, module }))} />
   }
-  const client = await createClient()
-  const { data: { user } } = await client.auth.getUser()
-  if (!user) redirect(`/sign-in?next=${encodeURIComponent(`/c/${courseSlug}/${assessmentSlug}`)}`)
+  const { supabase: client } = await requireUser()
   const { data: course } = await client.from('courses').select('id').eq('slug', courseSlug).maybeSingle()
   if (!course) notFound()
   const { data: assessment } = await client.from('assessments').select('id,label').eq('course_id', course.id).eq('slug', assessmentSlug).maybeSingle()

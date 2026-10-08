@@ -189,6 +189,10 @@ export async function setQuestionStatus(form: FormData) {
   if (!parsed.success) fail('/admin', 'Invalid status change')
   const path = `/admin/questions/${encodeURIComponent(parsed.data.id)}`
   const { supabase } = await requireAdmin()
+  if (parsed.data.status === 'published') {
+    const { data: current, error: currentError } = await supabase.from('questions').select('status').eq('id', parsed.data.id).single()
+    if (currentError || current?.status !== 'verified') fail(path, 'Mark this question verified before publishing')
+  }
   const { error } = await supabase.from('questions').update({ status: parsed.data.status }).eq('id', parsed.data.id)
   if (error) fail(path, error.message)
   done(path, `Question ${parsed.data.status}`)
@@ -228,7 +232,7 @@ export async function inviteStudent(form: FormData) {
   await requireAdmin()
   const requestHeaders = await headers()
   const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host') ?? ''
-  const protocol = requestHeaders.get('x-forwarded-proto') ?? 'https'
+  const protocol = requestHeaders.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https')
   const origin = process.env.NEXT_PUBLIC_SITE_URL ?? `${protocol}://${host}`
   const safeOrigin = z.url().safeParse(origin)
   if (!safeOrigin.success) fail('/admin', 'Invalid site URL')

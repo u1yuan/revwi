@@ -2,11 +2,11 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, BookOpen, LockSimple } from '@phosphor-icons/react/dist/ssr'
 import { SpaceShell } from '@/components/space/SpaceShell'
-import { findCourse } from '@/lib/catalog/static'
+import { getCourse } from '@/lib/catalog/server'
 
 export default async function PlanetPage({ params }: { params: Promise<{ course: string }> }) {
   const { course: courseSlug } = await params
-  const found = findCourse(courseSlug)
+  const found = await getCourse(courseSlug)
   if (!found) notFound()
   const { year, course } = found
   const links = course.assessments.map((assessment) => ({

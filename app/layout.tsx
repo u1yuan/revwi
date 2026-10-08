@@ -4,7 +4,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Revwi',
-  description: 'Course review across the multiverse',
+  description: 'Follow the grove to study your course assessments.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

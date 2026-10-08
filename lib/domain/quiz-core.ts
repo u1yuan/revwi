@@ -1,4 +1,4 @@
-import { questions, type Question } from '@/src/questions'
+import { questions, type Question } from '../../src/questions.ts'
 
 export type Mode = 'prep' | 'exam'
 export type Response = number[]
@@ -60,6 +60,7 @@ export function score(question: Question | { type: 'single' | 'multiple' | 'matc
     : (question as Question & { correct: number[] }).correct)
   if (!Array.isArray(correct)) return false
   const expectedLength = question.type === 'matching' ? question.pairs?.length : correct.length
+  if (correct.length !== expectedLength || (question.type !== 'matching' && 'requiredCount' in question && question.requiredCount !== undefined && question.requiredCount !== correct.length)) return false
   if (answer.length !== expectedLength || new Set(answer).size !== answer.length && question.type !== 'matching') return false
   if (question.type === 'matching') return correct.every((value, index) => answer[index] === value)
   return correct.every((value) => answer.includes(value))

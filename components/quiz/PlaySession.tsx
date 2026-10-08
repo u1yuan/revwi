@@ -7,6 +7,7 @@ import { continueAttempt, gradeLocalPrep, saveDraft, submitAnswer, type SubmitRe
 import { answerComplete, answerText, type PublicQuestion } from '@/lib/domain/public-question'
 import { SeedlingDock, type SeedlingPose } from './SeedlingDock'
 import { playCue } from '@/src/audio'
+import './chronicle.css'
 
 type Feedback = Extract<SubmitResult, { kind: 'prep-feedback' }>
 export type RemoteState = { id: string; mode: 'prep' | 'exam'; status: 'asking' | 'feedback'; cursor: number; total: number; draft: number[]; question: PublicQuestion; feedback: Omit<Feedback, 'ok' | 'kind'> | null; streak: number }

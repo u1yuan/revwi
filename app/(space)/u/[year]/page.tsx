@@ -2,11 +2,11 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, ArrowRight, BookOpen } from '@phosphor-icons/react/dist/ssr'
 import { SpaceShell } from '@/components/space/SpaceShell'
-import { findYear } from '@/lib/catalog/static'
+import { getYear } from '@/lib/catalog/server'
 
 export default async function UniversePage({ params }: { params: Promise<{ year: string }> }) {
   const { year: yearParam } = await params
-  const year = findYear(Number(yearParam))
+  const year = await getYear(Number(yearParam))
   if (!year) notFound()
 
   const links = year.courses.map((course) => ({ href: `/c/${course.slug}`, label: `${course.code} ${course.title}` }))

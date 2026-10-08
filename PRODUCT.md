@@ -13,16 +13,16 @@ web
 
 ## Product purpose
 
-Revwi is a review webapp with role-based access. Students navigate a course multiverse (year level → course → assessment bank) and study one question at a time with no backtracking. Admins maintain banks on the server. Prep mode teaches with immediate feedback; Exam mode hides correctness until the attempt ends.
+Revwi is an invite-only review webapp with role-based access. Students follow a side-view Grove path (year level → course → assessment bank) and study one question at a time with no backtracking. Admins maintain banks on the server. Prep mode teaches with immediate feedback; Exam mode hides correctness until the attempt ends.
 
 ## Operating context
 
-Launch ships one populated planet: **IT0123 DEVELOPMENT NETWORK** (Networking and Communications 2) in the **3rd Year** universe. Other year levels exist but show no courses yet. Questions can include long technical prose, code, matching pairs, and local exhibits. Answer keys and explanations are verified before publish; the app never invents scores.
+Launch ships one populated course landmark: **IT0123 DEVELOPMENT NETWORK** (Networking and Communications 2) in the **3rd Year** grove. Other year levels exist but show no courses yet. Questions can include long technical prose, code, matching pairs, and local exhibits. Answer keys and explanations are verified before publish; the app never invents scores.
 
 ## Capabilities and constraints
 
 - Supabase Auth with profiles (`admin` | `student`). Students cannot read answer keys; grading runs on the server.
-- Three.js renders navigation only (multiverse, universe, planet). The quiz is a flat, high-contrast reading surface (see [DESIGN.md](DESIGN.md)).
+- Three.js renders only the orthographic Grove navigation. The quiz is a flat, high-contrast reading surface with a separate seedling dock (see [DESIGN.md](DESIGN.md)).
 - Every spatial screen exposes the same destinations in a plain HTML list for keyboard, screen reader, and reduced-motion users.
 - Forward-only sessions: no revisiting submitted questions. Exam mode must not leak correctness in UI, audio, or API responses until finish.
 - Device-local preferences for master volume, music, and sound effects. Attempts and recency live in Postgres.

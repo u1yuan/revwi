@@ -101,11 +101,11 @@ async function main() {
     if (publishError) throw publishError
   }
 
-  const included = curationRecords.filter((r) => r.status === 'included')
-  for (const record of included) {
+  const bankRecords = curationRecords.filter((r) => r.status === 'included' || (r.status === 'duplicate' && r.assessment === 'Summative Assessment 2'))
+  for (const record of bankRecords) {
     const slug = assessmentSlugByLabel[record.assessment]
     const assessmentId = slug ? assessmentIdBySlug.get(slug) : undefined
-    const questionId = record.canonicalQuestionId
+    const questionId = record.status === 'included' ? record.canonicalQuestionId : record.duplicateOf
     if (!slug || !assessmentId || !questionId) {
       throw new Error(`Cannot link bank item for ${record.assessment} #${record.sourceNumber}`)
     }
@@ -120,7 +120,7 @@ async function main() {
     if (error) throw error
   }
 
-  console.log(`Seeded ${questions.length} questions and ${included.length} bank_items.`)
+  console.log(`Seeded ${questions.length} questions and ${bankRecords.length} bank_items (50 SA2, 89 Midterm Exam).`)
 }
 
 main().catch((err) => {
