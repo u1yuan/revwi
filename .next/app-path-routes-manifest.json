@@ -1,0 +1,10 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/(auth)/sign-in/page": "/sign-in",
+  "/(play)/c/[course]/[assessment]/play/page": "/c/[course]/[assessment]/play",
+  "/admin/page": "/admin",
+  "/(space)/c/[course]/[assessment]/page": "/c/[course]/[assessment]",
+  "/(space)/page": "/",
+  "/(space)/c/[course]/page": "/c/[course]",
+  "/(space)/u/[year]/page": "/u/[year]"
+}
