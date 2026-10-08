@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { playCue, preloadCues, stopAudio, syncAudioPreferences } from './audio'
 import { setMusicMode, setMusicTier, startMusic, stopMusic } from './music'
 import { questions } from './questions'
+import { persistStudyState, readStudyState } from '@/lib/client/study-storage'
 import {
   attemptFromSession,
   bestStreakForEntries,
@@ -13,8 +14,6 @@ import {
   currentStreak,
   emptyDraft,
   markSeen,
-  persistState,
-  readState,
   score,
   type Attempt,
   type Mode,
@@ -50,7 +49,7 @@ const isMilestone = (streak: number) => streak === 3 || streak === 5 || (streak 
 const tierFor = (streak: number) => streak >= 10 ? 4 : streak >= 5 ? 3 : streak >= 3 ? 2 : streak >= 1 ? 1 : 0
 
 export default function App() {
-  const [stored, setStored] = useState<PersistedStateV3>(readState)
+  const [stored, setStored] = useState<PersistedStateV3>(readStudyState)
   const [screen, setScreen] = useState<Screen>('home')
   const [lobbyStep, setLobbyStep] = useState<LobbyStep>('hero')
   const [mode, setMode] = useState<Mode>('prep')
@@ -81,7 +80,7 @@ export default function App() {
   const commit = useCallback((update: (previous: PersistedStateV3) => PersistedStateV3) => {
     setStored((previous) => {
       const next = update(previous)
-      persistState(next)
+      persistStudyState(next)
       return next
     })
   }, [])

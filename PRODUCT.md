@@ -1,4 +1,4 @@
-# DevNet Reviewer
+# Revwi
 
 <!-- impeccable:product-schema 1 -->
 
@@ -8,33 +8,34 @@ web
 
 ## Users
 
-One student preparing for the DevNet / Networking and Communications 2 midterm, studying on a laptop or phone.
+- **Students** review course assessments on a laptop or phone. They sign in, pick a year level, pick a course, and run Prep or Exam sessions.
+- **Admins** add courses, manage question banks per assessment (SA1, SA2, SA3, Midterm Exam, Final Exam), and publish verified items.
 
-## Product Purpose
+## Product purpose
 
-A solo, one-question-at-a-time reviewer for the supplied assessment bank. Prep mode supports learning from immediate feedback; Exam mode supports a continuous attempt with results at the end.
+Revwi is a review webapp with role-based access. Students navigate a course multiverse (year level → course → assessment bank) and study one question at a time with no backtracking. Admins maintain banks on the server. Prep mode teaches with immediate feedback; Exam mode hides correctness until the attempt ends.
 
-## Operating Context
+## Operating context
 
-The bank is limited to the two exported assessment files in `mods/`: the midterm exam and the Module 3 and 4 summative assessment. Questions can contain long technical text, code, and referenced exhibits.
+Launch ships one populated planet: **IT0123 DEVELOPMENT NETWORK** (Networking and Communications 2) in the **3rd Year** universe. Other year levels exist but show no courses yet. Questions can include long technical prose, code, matching pairs, and local exhibits. Answer keys and explanations are verified before publish; the app never invents scores.
 
-## Capabilities and Constraints
+## Capabilities and constraints
 
-- A mode choice precedes a session. Questions advance forward only; there is no backtracking.
-- In Prep, pressing **Next** reveals correctness and a brief explanation before **Continue** advances. In Exam, **Next** advances without correctness feedback; results and summary appear after the final question.
-- Answers may be single or multiple choice. The interface takes inspiration from Kahoot's visible question and colored-answer rhythm, with sound for meaningful interactions.
-- Background music can start with a session. Prep adds energy as a streak grows; Exam stays on the calm bed so sound never reveals correctness. A settings gear controls master, music, and effect levels.
-- No timer or leaderboard is part of this solo study product.
-- Verified answer keys and explanations are a content dependency. The exports record past attempt outcomes, not a trustworthy per-question key and explanation set. The product must not fabricate feedback or scores.
+- Supabase Auth with profiles (`admin` | `student`). Students cannot read answer keys; grading runs on the server.
+- Three.js renders navigation only (multiverse, universe, planet). The quiz is a flat, high-contrast reading surface (see [DESIGN.md](DESIGN.md)).
+- Every spatial screen exposes the same destinations in a plain HTML list for keyboard, screen reader, and reduced-motion users.
+- Forward-only sessions: no revisiting submitted questions. Exam mode must not leak correctness in UI, audio, or API responses until finish.
+- Device-local preferences for master volume, music, and sound effects. Attempts and recency live in Postgres.
+- No timer, leaderboard, or live multiplayer.
 
-## Evidence on Hand
+## Evidence on hand
 
-- `PRD.md` states the purpose, source bank, modes, forward-only flow, and Kahoot reference.
-- `mods/CS0016NC2ATN37_S2-SUMMATIVE_Summative_Assessment_2-MIDTERM_Midterm_Exam.md` contains 99 exported questions.
-- `mods/CS0016NC2ATN37_S2-SUMMATIVE_Summative_Assessment_2-S2-SUMMATIVE_Summative_Assessment_2_Module_3_and_M.md` contains 50 exported questions.
+- [ARCHITECTURE.md](ARCHITECTURE.md) defines schema, routes, and grading boundaries.
+- [src/questions.ts](src/questions.ts) and [src/curation.ts](src/curation.ts) seed 122 playable items into SA2 and Midterm Exam banks.
+- Legacy interaction and contrast rules originate in the prior DevNet Reviewer quiz implementation and remain authoritative for the **Chronicle** surface.
 
-## Product Principles
+## Product principles
 
-1. Keep the current question and every answer readable on the student's own screen.
-2. Make the forward-only mode rules clear before the session starts.
-3. Give motivating response cues without obscuring technical content or inventing correctness.
+1. **Study first.** Code blocks, exhibits, and answer wording stay readable at 390 px width.
+2. **Navigation delights; review clarifies.** Motion and 3D earn their place only outside the question screen.
+3. **Trust the key.** Publish gates and server grading enforce verified content; empty banks show as locked, not broken.

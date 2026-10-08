@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Revwi 3D feel test</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #0B0F17; color: #E8EDF5; font-family: system-ui, sans-serif; }
+    #hud { position: fixed; z-index: 2; top: 8px; left: 8px; right: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+    button { padding: 8px 12px; border-radius: 8px; border: 1px solid #334155; background: #1E293B; color: inherit; cursor: pointer; }
+    button.active { border-color: #2457C5; background: #2457C5; }
+    #stats { position: fixed; bottom: 8px; left: 8px; font-size: 12px; color: #94A3B8; z-index: 2; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <div id="hud">
+    <button type="button" data-view="multiverse">Multiverse</button>
+    <button type="button" data-view="universe">Universe</button>
+    <button type="button" data-view="planet">Planet</button>
+    <span style="margin-left:auto">Metaphor:</span>
+    <button type="button" data-meta="orbit" class="active">A Orbit</button>
+    <button type="button" data-meta="surface">B Surface</button>
+    <button type="button" data-meta="ring">C Ring</button>
+  </div>
+  <div id="stats"></div>
+  <script type="importmap">
+    { "imports": { "three": "https://unpkg.com/three@0.170.0/build/three.module.js" } }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+
+    const statsEl = document.getElementById('stats');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0b0f17);
+    const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 200);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    const light = new THREE.DirectionalLight(0xffffff, 1.2);
+    light.position.set(4, 6, 8);
+    scene.add(light, new THREE.AmbientLight(0x445566, 0.6));
+
+    const planet = new THREE.Mesh(
+      new THREE.SphereGeometry(1.2, 48, 48),
+      new THREE.MeshStandardMaterial({ color: 0x08756b, roughness: 0.7 })
+    );
+    scene.add(planet);
+
+    const moons = [];
+    for (let i = 0; i < 5; i++) {
+      const m = new THREE.Mesh(
+        new THREE.SphereGeometry(0.18, 24, 24),
+        new THREE.MeshStandardMaterial({ color: i < 2 ? 0x2457c5 : 0x334155 })
+      );
+      moons.push(m);
+      scene.add(m);
+    }
+
+    const portals = [];
+    for (let i = 0; i < 4; i++) {
+      const p = new THREE.Mesh(
+        new THREE.TorusGeometry(0.6, 0.08, 16, 48),
+        new THREE.MeshStandardMaterial({ color: i === 2 ? 0x2457c5 : 0x1e293b })
+      );
+      p.position.set((i - 1.5) * 2.2, 0, -2);
+      portals.push(p);
+      scene.add(p);
+    }
+
+    const views = {
+      multiverse: { pos: [0, 1.5, 8], look: [0, 0, 0] },
+      universe: { pos: [0, 0.5, 5], look: [0, 0, 0] },
+      planet: { pos: [0, 0.8, 3.2], look: [0, 0, 0] },
+    };
+    let view = 'multiverse';
+    let meta = 'orbit';
+    let camFrom = camera.position.clone();
+    let camTo = new THREE.Vector3(...views.multiverse.pos);
+    let t = 1;
+
+    function layoutMoons(time) {
+      if (meta === 'orbit') {
+        moons.forEach((m, i) => {
+          const a = time * 0.3 + (i / 5) * Math.PI * 2;
+          m.position.set(Math.cos(a) * 2.2, Math.sin(a) * 0.5, Math.sin(a) * 1.2);
+          m.visible = view === 'planet';
+        });
+      } else if (meta === 'surface') {
+        moons.forEach((m, i) => {
+          m.position.set(-1.8 + i * 0.9, -1.1, 0.6);
+          m.visible = view === 'planet';
+        });
+      } else {
+        const ring = new THREE.Group();
+        moons.forEach((m, i) => {
+          const a = (i / 5) * Math.PI * 2;
+          m.position.set(Math.cos(a) * 2, 0, Math.sin(a) * 2);
+          m.visible = view === 'planet';
+        });
+      }
+      planet.visible = view !== 'multiverse';
+      portals.forEach((p) => { p.visible = view === 'multiverse' || view === 'universe'; });
+    }
+
+    function fly(next) {
+      view = next;
+      camFrom.copy(camera.position);
+      camTo.set(...views[next].pos);
+      t = 0;
+    }
+
+    document.querySelectorAll('[data-view]').forEach((btn) => {
+      btn.addEventListener('click', () => fly(btn.dataset.view));
+    });
+    document.querySelectorAll('[data-meta]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-meta]').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        meta = btn.dataset.meta;
+      });
+    });
+
+    const frames = [];
+    let last = performance.now();
+    function animate(now) {
+      const dt = now - last;
+      last = now;
+      frames.push(dt);
+      if (frames.length > 120) frames.shift();
+      const avg = frames.reduce((a, b) => a + b, 0) / frames.length;
+      statsEl.textContent = `avg frame ${avg.toFixed(1)} ms · view ${view} · ${meta}`;
+
+      if (t < 1) {
+        t = Math.min(1, t + dt / 1200);
+        camera.position.lerpVectors(camFrom, camTo, t);
+      }
+      camera.lookAt(0, 0, 0);
+      layoutMoons(now * 0.001);
+      planet.rotation.y += 0.002;
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+    camera.position.set(...views.multiverse.pos);
+    requestAnimationFrame(animate);
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+  </script>
+</body>
+</html>
