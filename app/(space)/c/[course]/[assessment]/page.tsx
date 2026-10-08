@@ -1,6 +1,9 @@
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { findCourse } from '@/lib/catalog/static'
+import BankSetup from '@/components/quiz/BankSetup'
+import { localBank } from '@/lib/server/question-catalog'
+import { createClient } from '@/lib/supabase/server'
+import { supabaseConfigured } from '@/lib/supabase/env'
 
 export default async function BankSetupPage({
   params,
@@ -8,38 +11,23 @@ export default async function BankSetupPage({
   params: Promise<{ course: string; assessment: string }>
 }) {
   const { course: courseSlug, assessment: assessmentSlug } = await params
-  const found = findCourse(courseSlug)
-  if (!found) notFound()
-  const assessment = found.course.assessments.find((a) => a.slug === assessmentSlug)
-  if (!assessment || assessment.locked) notFound()
-
-  return (
-    <div className="chronicle-surface" style={{ minHeight: '100dvh', padding: '32px 16px' }}>
-      <div style={{ maxWidth: 640, margin: '0 auto' }}>
-        <p style={{ marginBottom: 8 }}>
-          <Link href={`/c/${courseSlug}`} style={{ color: '#2457C5' }}>
-            Back to planet
-          </Link>
-        </p>
-        <h1 style={{ fontSize: 28, marginBottom: 8 }}>{assessment.label}</h1>
-        <p style={{ marginBottom: 24, maxWidth: '65ch' }}>
-          {found.course.title}. Forward only. Choose Prep or Exam on the next screen.
-        </p>
-        <Link
-          href={`/c/${courseSlug}/${assessmentSlug}/play`}
-          style={{
-            display: 'inline-block',
-            background: '#2457C5',
-            color: '#fff',
-            padding: '12px 20px',
-            borderRadius: 8,
-            fontWeight: 600,
-            textDecoration: 'none',
-          }}
-        >
-          Open reviewer
-        </Link>
-      </div>
-    </div>
-  )
+  if (!supabaseConfigured()) {
+    const found = findCourse(courseSlug)
+    const assessment = found?.course.assessments.find((a) => a.slug === assessmentSlug)
+    if (!assessment || assessment.locked) notFound()
+    return <BankSetup course={courseSlug} assessment={assessmentSlug} label={assessment.label} bank={localBank(assessmentSlug).map(({ id, module }) => ({ id, module }))} />
+  }
+  const client = await createClient()
+  const { data: { user } } = await client.auth.getUser()
+  if (!user) redirect(`/sign-in?next=${encodeURIComponent(`/c/${courseSlug}/${assessmentSlug}`)}`)
+  const { data: course } = await client.from('courses').select('id').eq('slug', courseSlug).maybeSingle()
+  if (!course) notFound()
+  const { data: assessment } = await client.from('assessments').select('id,label').eq('course_id', course.id).eq('slug', assessmentSlug).maybeSingle()
+  if (!assessment) notFound()
+  const { data: items } = await client.from('bank_items').select('question_id').eq('assessment_id', assessment.id)
+  const ids = items?.map((i) => i.question_id) ?? []
+  const { data: questions } = ids.length ? await client.from('questions').select('id,module').in('id', ids).eq('status', 'published') : { data: [] }
+  if (!questions?.length) notFound()
+  const { data: active } = await client.from('attempts').select('id').eq('assessment_id', assessment.id).in('status', ['asking', 'feedback']).maybeSingle()
+  return <BankSetup course={courseSlug} assessment={assessmentSlug} label={assessment.label} assessmentId={assessment.id} bank={questions} activeId={active?.id} />
 }

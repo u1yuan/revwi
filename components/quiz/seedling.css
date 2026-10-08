@@ -1,0 +1,15 @@
+.seedling-dock{width:190px;min-height:178px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;position:relative;overflow:hidden;padding:10px 10px 3px;border:1px solid #9daeba;border-bottom:6px solid #607987;border-radius:14px;background:linear-gradient(180deg,#d8e6e7 0%,#e9f0ec 63%,#abb9ac 64%,#809887 100%);box-shadow:0 5px 0 #405b67,0 10px 20px #14243a18;color:#294957}
+.seedling-dock-label{position:absolute;left:12px;top:10px;font:700 11px/1.2 Lexend,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#294957}
+.seedling-art{display:block;width:142px;height:145px;overflow:visible}
+.seedling-character,.seedling-left-leaf,.seedling-right-leaf{transform-origin:75px 118px}
+.seedling-pose-curious .seedling-character{transform:rotate(5deg)}
+.seedling-pose-curious .seedling-right-leaf{transform:rotate(12deg)}
+.seedling-pose-celebrate .seedling-character{transform:translateY(-8px)}
+.seedling-pose-celebrate .seedling-left-leaf{transform:rotate(-16deg)}
+.seedling-pose-celebrate .seedling-right-leaf{transform:rotate(16deg)}
+.seedling-pose-support .seedling-character{transform:rotate(-5deg) translateY(4px)}
+.seedling-pose-support .seedling-mouth{d:path('M70 106 Q76 101 82 106')}
+.seedling-pose-exam-neutral .seedling-character{transform:none}
+.seedling-pose-exam-neutral .seedling-mouth{d:path('M72 105 L80 105')}
+@media(prefers-reduced-motion:no-preference){.seedling-pose-curious .seedling-character{animation:seedling-look 3.8s ease-in-out infinite}.seedling-pose-celebrate .seedling-character{animation:seedling-cheer .6s ease-out 2}.seedling-pose-idle .seedling-character{animation:seedling-breathe 5s ease-in-out infinite}@keyframes seedling-look{50%{transform:rotate(1deg) translateY(-2px)}}@keyframes seedling-cheer{50%{transform:translateY(-15px)}}@keyframes seedling-breathe{50%{transform:translateY(-2px)}}}
+@media(prefers-reduced-motion:reduce){.seedling-character,.seedling-left-leaf,.seedling-right-leaf{animation:none!important;transition:none!important}}

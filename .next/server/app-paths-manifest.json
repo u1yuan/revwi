@@ -1,10 +1,8 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
   "/(auth)/sign-in/page": "app/(auth)/sign-in/page.js",
-  "/(play)/c/[course]/[assessment]/play/page": "app/(play)/c/[course]/[assessment]/play/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/(space)/c/[course]/[assessment]/page": "app/(space)/c/[course]/[assessment]/page.js",
-  "/(space)/page": "app/(space)/page.js",
+  "/welcome/page": "app/welcome/page.js",
   "/(space)/c/[course]/page": "app/(space)/c/[course]/page.js",
+  "/(space)/page": "app/(space)/page.js",
+  "/(space)/c/[course]/[assessment]/page": "app/(space)/c/[course]/[assessment]/page.js",
   "/(space)/u/[year]/page": "app/(space)/u/[year]/page.js"
 }

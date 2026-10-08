@@ -73,13 +73,13 @@ async function main() {
   for (const question of questions) {
     const payload =
       question.type === 'matching'
-        ? { targets: question.targets, pairs: question.pairs }
-        : { choices: question.choices, correct: question.correct }
+        ? { targets: question.targets, pairs: question.pairs.map(({ term }) => ({ term })), ...(question.edit ? { edit: question.edit } : {}) }
+        : { choices: question.choices, requiredCount: question.correct.length, ...(question.code ? { code: question.code } : {}), ...(question.edit ? { edit: question.edit } : {}) }
 
     const { error: questionError } = await supabase.from('questions').upsert({
       id: question.id,
       course_id: course.id,
-      status: 'published',
+      status: 'draft',
       module: question.module,
       topic: question.topic,
       qtype: question.type,
@@ -96,6 +96,9 @@ async function main() {
       explanation: question.explanation,
     })
     if (keyError) throw keyError
+
+    const { error: publishError } = await supabase.from('questions').update({ status: 'published' }).eq('id', question.id)
+    if (publishError) throw publishError
   }
 
   const included = curationRecords.filter((r) => r.status === 'included')

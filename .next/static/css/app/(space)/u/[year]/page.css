@@ -1,0 +1,76 @@
+/*!************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./components/space/grove.css ***!
+  \************************************************************************************************************************************************************************************************************************************************************************/
+.grove-surface{min-height:100dvh;background:#152a43;color:#f7f4e9;font-family:Geist,Arial,sans-serif;overflow-x:hidden}
+.grove-surface *{box-sizing:border-box}
+.grove-surface a{color:inherit}
+.grove-surface :focus-visible{outline:3px solid #f6c453;outline-offset:3px}
+.grove-header{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 clamp(16px,2.6vw,42px);background:#10233d;border-bottom:1px solid #3a5770;position:relative;z-index:5}
+.grove-brand-row,.grove-header-actions{display:flex;align-items:center;gap:22px}
+.grove-brand{font-size:28px;font-weight:800;letter-spacing:-.055em;text-decoration:none;line-height:1}
+.grove-context{border-left:1px solid #6d8294;padding-left:20px;font-weight:600;font-size:15px;color:#d7e5ed}
+.grove-header-actions{gap:11px}
+.grove-list-button,.grove-sign-in{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:39px;padding:0 14px;border:1px solid #8499ad;border-radius:22px;background:#172d4c;color:#f7f4e9!important;font-size:14px;font-weight:650;text-decoration:none;white-space:nowrap}
+.grove-list-button:hover,.grove-sign-in:hover{background:#26486d}
+.grove-sign-in{border-color:transparent;background:transparent}
+.grove-main{position:relative;min-height:calc(100dvh - 68px);isolation:isolate}
+.grove-sky{position:absolute;inset:0;background:radial-gradient(circle at 83% 22%,#ef9f79 0,transparent 23%),linear-gradient(180deg,#385a83 0%,#647fa1 37%,#8296a1 58%,#213d54 95%)}
+.grove-canvas{position:absolute;inset:0;pointer-events:none;opacity:.98}
+.grove-canvas canvas{display:block}
+.grove-content{position:relative;z-index:1;min-height:calc(100dvh - 68px);display:flex;flex-direction:column;padding:clamp(24px,3.2vw,48px) clamp(18px,3vw,52px) 28px}
+.grove-intro{max-width:670px;padding:18px 24px 20px;border-left:4px solid #f6c453;background:#132942e8;box-shadow:0 15px 34px #0d253944}
+.grove-intro h1{font:750 clamp(28px,3.6vw,51px)/1.11 Geist,Arial,sans-serif;letter-spacing:-.055em;margin:7px 0 10px;text-wrap:balance}
+.grove-intro p{font-size:16px;line-height:1.45;margin:0;color:#d7e3e7}
+.grove-intro .grove-eyebrow{color:#f6c453;font-size:12px;font-weight:750;letter-spacing:.12em;text-transform:uppercase}
+.grove-back{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-size:13px;font-weight:650;color:#cce8f3!important;margin-bottom:15px}
+.grove-back:hover{text-decoration:underline}
+.grove-year-links,.grove-landmarks,.grove-course-links{margin-top:auto;display:grid;grid-gap:12px;gap:12px}
+.grove-year-links{grid-template-columns:repeat(4,minmax(0,1fr))}
+.grove-year-link{min-height:112px;position:relative;display:grid;align-content:center;grid-gap:4px;gap:4px;padding:15px 18px;background:#132a40f2;border:1px solid #667b83;border-top:4px solid #687f7f;border-radius:8px;text-decoration:none;box-shadow:0 10px 25px #0b1d2d66}
+.grove-year-link:hover{background:#1d3a51;transform:translateY(-3px)}
+.grove-year-link.is-active{border-color:#62b9ad;border-top-color:#55cbbb;box-shadow:0 0 22px #30c4b744,0 10px 25px #0b1d2d66}
+.grove-year-number{color:#8aa4ad;font-size:11px;font-weight:700;letter-spacing:.13em}
+.grove-year-name{font-size:20px;font-weight:750}
+.grove-year-note{font-size:12px;color:#bfd0d5}
+.grove-year-arrow{position:absolute;right:18px;top:40px;color:#f6c453}
+.grove-course-links{width:min(100%,630px);align-self:center}
+.grove-course-card{min-height:116px;display:flex;align-items:center;gap:18px;padding:20px;background:#132b43f5;border:1px solid #55b7ad;border-left:5px solid #59c7b6;border-radius:8px;text-decoration:none;box-shadow:0 0 25px #32c9b63a,0 14px 30px #09203466}
+.grove-course-card:hover{background:#1c4257}
+.grove-course-icon{display:grid;place-items:center;width:58px;height:58px;flex:none;border-radius:50%;background:#08756b;color:#e6fffa}
+.grove-course-copy{display:grid;grid-gap:2px;gap:2px;flex:1 1}
+.grove-course-copy small{font-size:12px;letter-spacing:.12em;color:#8ddacc;font-weight:750}
+.grove-course-copy strong{font-size:23px;line-height:1.15;letter-spacing:-.025em}
+.grove-course-copy span{font-size:13px;color:#c3d5d6}
+.grove-empty-card{padding:22px;background:#182e43e8;border:1px solid #798d96;color:#d6e0df;text-align:center;border-radius:8px}
+.grove-landmarks{grid-template-columns:repeat(5,minmax(0,1fr));align-items:end}
+.grove-landmark{min-height:108px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:12px 6px;background:#12283bf2;border:1px solid #556b79;border-top:4px solid #667781;border-radius:8px;text-align:center;text-decoration:none;box-shadow:0 10px 25px #0b1d2d80}
+.grove-landmark strong{font-size:clamp(14px,1.4vw,18px);line-height:1.2}
+.grove-landmark small{font-size:12px;color:#c5d4d6}
+.grove-landmark-icon{line-height:1;color:#adc0c4}
+.grove-landmark.is-open{border-color:#4fc6b6;border-top-color:#72e0cc;box-shadow:0 0 24px #19c6b967,0 10px 25px #0b1d2d80}
+.grove-landmark.is-open .grove-landmark-icon{color:#83eee0}
+.grove-landmark.is-open:hover{background:#194e58;transform:translateY(-4px)}
+.grove-landmark.is-amber{border-color:#eac46f;border-top-color:#ffe197;box-shadow:0 0 28px #ffc65d66,0 10px 25px #0b1d2d80}
+.grove-landmark.is-amber .grove-landmark-icon{color:#f6c453}
+.grove-landmark.is-locked{opacity:.84}
+.grove-route-list{position:fixed;z-index:10;right:18px;top:77px;width:min(350px,calc(100vw - 36px));padding:20px;background:#f4f7fb;color:#14243a;border:1px solid #b8c8d4;border-radius:12px;box-shadow:0 22px 55px #061b32aa}
+.grove-route-list[hidden]{display:none}
+.grove-route-list-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.grove-route-list h2{font-size:19px;margin:0}
+.grove-route-list button{border:0;background:none;color:#2457c5;font-weight:700}
+.grove-route-list ul{list-style:none;padding:0;margin:0;display:grid;grid-gap:5px;gap:5px}
+.grove-route-list li>a,.grove-route-list li>span{display:flex;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:7px;background:#e5ecf4;color:#14243a;text-decoration:none;font-weight:650}
+.grove-route-list li>a:hover{background:#d5e5f7}
+.grove-route-list li>span{color:#5d6b76;background:#edf1f5}
+.grove-route-list small{font-weight:500}
+@media(max-width:700px){
+  .grove-header{height:60px;padding:0 14px}.grove-brand{font-size:24px}.grove-context{font-size:12px;padding-left:10px}.grove-brand-row{gap:10px}.grove-header-actions{gap:2px}.grove-list-button,.grove-sign-in{padding:0 10px;font-size:12px;height:36px}.grove-sign-in span{display:none}
+  .grove-main,.grove-content{min-height:calc(100dvh - 60px)}.grove-content{padding:20px 15px 24px}.grove-canvas{height:430px;bottom:auto}.grove-intro{padding:15px 18px 17px;max-width:100%;background:#132942f2}.grove-intro h1{font-size:29px}.grove-intro p{font-size:14px}
+  .grove-year-links{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:250px}.grove-year-link{min-height:100px}.grove-year-name{font-size:18px}.grove-year-arrow{right:12px;top:37px}
+  .grove-course-links{margin-top:250px}.grove-course-card{min-height:106px;padding:14px;gap:12px}.grove-course-icon{width:45px;height:45px}.grove-course-copy strong{font-size:17px}.grove-course-copy span{font-size:12px}
+  .grove-landmarks{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:245px}.grove-landmark{min-height:96px}.grove-landmark strong{font-size:16px}.grove-landmark:last-child{grid-column:1/-1}.grove-route-list{top:68px;right:10px}
+}
+@media(max-width:390px){.grove-context{display:none}.grove-intro h1{font-size:27px}}
+@media(prefers-reduced-motion:no-preference){.grove-year-link,.grove-landmark,.grove-course-card{transition:transform .18s ease,background .18s ease}.grove-content{animation:grove-enter .35s ease both}@keyframes grove-enter{from{opacity:0}to{opacity:1}}}
+@media(prefers-reduced-motion:reduce){.grove-year-link:hover,.grove-landmark.is-open:hover{transform:none}.grove-content{animation:none}}
+

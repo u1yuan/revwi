@@ -1,4 +1,5 @@
 -- Invite-only membership, public question safety, and atomic attempt transitions.
+alter type public.attempt_status add value if not exists 'abandoned';
 create schema if not exists private;
 revoke all on schema private from public, anon;
 grant usage on schema private to authenticated;
@@ -37,6 +38,11 @@ begin
 end;
 $$;
 revoke all on function public.handle_new_user() from public, anon, authenticated;
+drop trigger if exists on_auth_user_invited on auth.users;
+create trigger on_auth_user_invited
+  after update of invited_at on auth.users
+  for each row when (new.invited_at is not null and old.invited_at is null)
+  execute function public.handle_new_user();
 
 drop policy if exists profiles_select_own on public.profiles;
 drop policy if exists profiles_admin_all on public.profiles;
@@ -118,6 +124,23 @@ grant insert, update, delete on public.profiles, public.year_levels, public.cour
 grant select on public.question_keys to authenticated;
 
 -- Published content must be complete, and the public payload cannot contain keys.
+-- Clean any rows seeded by the earlier script before enabling the new guard.
+update public.questions q
+set payload = case
+  when q.qtype = 'matching' then
+    jsonb_set(q.payload, '{pairs}', coalesce((
+      select jsonb_agg(pair - 'target' order by position)
+      from jsonb_array_elements(coalesce(q.payload->'pairs', '[]'::jsonb)) with ordinality as p(pair, position)
+    ), '[]'::jsonb)) - 'correct' - 'explanation'
+  else
+    (q.payload - 'correct' - 'explanation') ||
+    jsonb_build_object('requiredCount', jsonb_array_length(coalesce(q.payload->'correct', '[]'::jsonb)))
+end
+where q.payload ? 'correct' or q.payload ? 'explanation' or
+  (q.qtype = 'matching' and exists (
+    select 1 from jsonb_array_elements(coalesce(q.payload->'pairs', '[]'::jsonb)) p where p ? 'target'
+  ));
+
 create or replace function public.guard_question_publish()
 returns trigger language plpgsql set search_path = '' as $$
 begin
@@ -151,9 +174,15 @@ create or replace function public.guard_published_key()
 returns trigger language plpgsql set search_path = '' as $$
 declare qid text;
 begin
+  if tg_op = 'DELETE' then
+    if exists (select 1 from public.questions q where q.id = old.question_id and q.status = 'published') then
+      raise exception 'Cannot remove a key from a published question';
+    end if;
+    return old;
+  end if;
   qid := coalesce(new.question_id, old.question_id);
   if exists (select 1 from public.questions q where q.id = qid and q.status = 'published') then
-    if tg_op = 'DELETE' or new.question_id is distinct from old.question_id or
+    if new.question_id is distinct from old.question_id or
        length(trim(new.explanation)) = 0 or
        jsonb_typeof(new.correct) is distinct from 'array' or jsonb_array_length(new.correct) = 0 then
       raise exception 'Cannot remove a complete key from a published question';
@@ -219,3 +248,18 @@ end;
 $$;
 revoke all on function public.continue_attempt_feedback(uuid, uuid) from public, anon, authenticated;
 grant execute on function public.continue_attempt_feedback(uuid, uuid) to service_role;
+
+create or replace function public.abandon_attempt(p_user_id uuid, p_attempt_id uuid)
+returns public.attempts language plpgsql security invoker set search_path = '' as $$
+declare a public.attempts;
+begin
+  update public.attempts
+  set status = 'abandoned', draft = '[]'::jsonb
+  where id = p_attempt_id and user_id = p_user_id and status in ('asking', 'feedback')
+  returning * into a;
+  if not found then raise exception 'Unfinished attempt not found'; end if;
+  return a;
+end;
+$$;
+revoke all on function public.abandon_attempt(uuid, uuid) from public, anon, authenticated;
+grant execute on function public.abandon_attempt(uuid, uuid) to service_role;

@@ -1,5 +1,6 @@
 import 'server-only'
 import { questions, type Question } from '@/src/questions'
+import { curationRecords } from '@/src/curation'
 import { publicQuestionSchema, type PublicQuestion } from '@/lib/domain/public-question'
 
 export function publicFromLocal(question: Question): PublicQuestion {
@@ -23,6 +24,8 @@ export function publicFromRow(row: any): PublicQuestion {
 }
 
 export function localBank(assessment: string): PublicQuestion[] {
-  const selected = assessment === 'sa2' ? questions.filter((q) => q.source.assessment === 'Summative Assessment 2') : questions.filter((q) => q.source.assessment === 'Midterm Exam')
+  const label = assessment === 'sa2' ? 'Summative Assessment 2' : 'Midterm Exam'
+  const ids = new Set(curationRecords.filter((record) => record.status === 'included' && record.assessment === label).map((record) => record.canonicalQuestionId))
+  const selected = questions.filter((q) => ids.has(q.id))
   return selected.map(publicFromLocal)
 }

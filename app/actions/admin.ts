@@ -2,6 +2,7 @@
 
 import { randomUUID } from 'node:crypto'
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { requireAdmin } from '@/lib/server/auth'
@@ -106,11 +107,15 @@ const questionSchema = z.object({
   explanation: text,
   citations: z.array(citationSchema).min(1),
   exhibit_path: z.string().trim().optional(),
+  code: z.string().optional(),
+  edit: z.string().optional(),
 }).superRefine((value, ctx) => {
   const options = value.qtype === 'matching' ? value.targets : value.choices
   if (!options || options.length < 2) ctx.addIssue({ code: 'custom', message: 'At least two choices or targets are required' })
   if (value.qtype === 'matching' && (!value.terms?.length || value.correct.length !== value.terms.length)) ctx.addIssue({ code: 'custom', message: 'Each matching term needs a target index' })
   if (value.qtype === 'single' && value.correct.length !== 1) ctx.addIssue({ code: 'custom', message: 'Single choice needs one answer index' })
+  if (value.qtype === 'multiple' && value.correct.length < 2) ctx.addIssue({ code: 'custom', message: 'Multiple choice needs at least two answer indices' })
+  if (value.qtype !== 'matching' && new Set(value.correct).size !== value.correct.length) ctx.addIssue({ code: 'custom', message: 'Choice answers must be distinct' })
   if (options && value.correct.some((index) => index >= options.length)) ctx.addIssue({ code: 'custom', message: 'Answer index exceeds the available options' })
 })
 
@@ -135,17 +140,19 @@ export async function saveQuestion(form: FormData) {
     choices: lines(field(form, 'choices')),
     terms: lines(field(form, 'terms')),
     targets: lines(field(form, 'targets')),
-    correct: field(form, 'correct').split(',').map((part) => Number(part.trim())),
+    correct: field(form, 'correct').split(',').map((part) => Number(part.trim()) - 1),
     explanation: field(form, 'explanation'),
     citations,
     exhibit_path: field(form, 'exhibit_path'),
+    code: field(form, 'code'),
+    edit: field(form, 'edit'),
   })
   if (!parsed.success) fail(path, parsed.error.issues[0]?.message ?? 'Invalid question')
   const { supabase } = await requireAdmin()
   const question = parsed.data
   const payload = question.qtype === 'matching'
-    ? { targets: question.targets, pairs: question.terms?.map((term) => ({ term })) }
-    : { choices: question.choices }
+    ? { targets: question.targets, pairs: question.terms?.map((term) => ({ term })), edit: question.edit || undefined }
+    : { choices: question.choices, requiredCount: question.correct.length, code: question.code || undefined, edit: question.edit || undefined }
   const { data: existing, error: readError } = await supabase.from('questions').select('status').eq('id', question.id).maybeSingle()
   if (readError) fail(path, readError.message)
   // Demote before changing content or keys, then require an explicit publish action.
@@ -156,7 +163,7 @@ export async function saveQuestion(form: FormData) {
   const { error: questionError } = await supabase.from('questions').upsert({
     id: question.id,
     course_id: question.course_id,
-    status: existing?.status === 'draft' ? 'draft' : 'verified',
+    status: !existing || existing.status === 'draft' ? 'draft' : 'verified',
     module: question.module,
     topic: question.topic,
     qtype: question.qtype,
@@ -203,6 +210,11 @@ export async function setBankMembership(form: FormData) {
   const path = `/admin/questions/${encodeURIComponent(parsed.data.question_id)}`
   const { supabase } = await requireAdmin()
   const { question_id, assessment_id, source_number, included } = parsed.data
+  const [questionResult, assessmentResult] = await Promise.all([
+    supabase.from('questions').select('course_id').eq('id', question_id).single(),
+    supabase.from('assessments').select('course_id').eq('id', assessment_id).single(),
+  ])
+  if (questionResult.error || assessmentResult.error || questionResult.data.course_id !== assessmentResult.data.course_id) fail(path, 'Question and assessment must belong to the same course')
   const result = included === 'yes'
     ? await supabase.from('bank_items').upsert({ question_id, assessment_id, source_number })
     : await supabase.from('bank_items').delete().eq('question_id', question_id).eq('assessment_id', assessment_id)
@@ -214,7 +226,10 @@ export async function inviteStudent(form: FormData) {
   const parsed = z.object({ email: z.email() }).safeParse({ email: field(form, 'email').trim().toLowerCase() })
   if (!parsed.success) fail('/admin', 'Enter a valid email address')
   await requireAdmin()
-  const origin = field(form, 'origin')
+  const requestHeaders = await headers()
+  const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host') ?? ''
+  const protocol = requestHeaders.get('x-forwarded-proto') ?? 'https'
+  const origin = process.env.NEXT_PUBLIC_SITE_URL ?? `${protocol}://${host}`
   const safeOrigin = z.url().safeParse(origin)
   if (!safeOrigin.success) fail('/admin', 'Invalid site URL')
   const { error } = await createGradingClient().auth.admin.inviteUserByEmail(parsed.data.email, {
