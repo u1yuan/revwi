@@ -1,24 +1,40 @@
 {
-  "name": "devnet-reviewer",
+  "name": "revwi",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
+    "dev": "next dev --hostname 0.0.0.0",
     "validate:bank": "node --experimental-strip-types scripts/validate-bank.ts",
-    "build": "npm run validate:bank && tsc -b && vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "test:domain": "node --experimental-strip-types tests/quiz-core.test.ts",
+    "build": "npm run validate:bank && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "seed": "node --env-file=.env --experimental-strip-types scripts/seed-supabase.ts"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.1",
+    "@supabase/server": "^1.9.1",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.117.3",
+    "geist": "^1.7.2",
     "motion": "^14.0.0",
+    "next": "^15.5.27",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "server-only": "^0.0.1",
+    "three": "^0.186.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@types/node": "^22.12.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
-    "@vitejs/plugin-react": "^5.1.0",
-    "typescript": "~5.9.3",
-    "vite": "^7.3.0"
+    "@types/three": "^0.186.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.0",
+    "typescript": "~5.9.3"
   }
 }

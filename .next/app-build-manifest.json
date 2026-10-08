@@ -1,0 +1,55 @@
+{
+  "pages": {
+    "/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/layout.css",
+      "static/chunks/app/layout.js"
+    ],
+    "/(space)/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(space)/layout.js"
+    ],
+    "/(space)/c/[course]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(space)/c/[course]/page.css",
+      "static/chunks/app/(space)/c/[course]/page.js"
+    ],
+    "/(space)/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(space)/page.css",
+      "static/chunks/app/(space)/page.js"
+    ],
+    "/(auth)/sign-in/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(auth)/sign-in/page.js"
+    ],
+    "/(space)/c/[course]/[assessment]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(space)/c/[course]/[assessment]/page.css",
+      "static/chunks/app/(space)/c/[course]/[assessment]/page.js"
+    ],
+    "/(space)/u/[year]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(space)/u/[year]/page.css",
+      "static/chunks/app/(space)/u/[year]/page.js"
+    ],
+    "/welcome/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/welcome/page.js"
+    ],
+    "/(play)/c/[course]/[assessment]/play/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(play)/c/[course]/[assessment]/play/page.css",
+      "static/chunks/app/(play)/c/[course]/[assessment]/play/page.js"
+    ]
+  }
+}

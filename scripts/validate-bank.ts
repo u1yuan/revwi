@@ -44,6 +44,10 @@ for (const question of questions) {
 
 const included = curationRecords.filter((record) => record.status === 'included')
 assert(included.length === questions.length, `Included records (${included.length}) do not match questions (${questions.length})`)
+const sa2Playable = curationRecords.filter((record) => record.assessment === 'Summative Assessment 2' && record.status !== 'excluded')
+const midtermPlayable = curationRecords.filter((record) => record.assessment === 'Midterm Exam' && record.status === 'included')
+assert(sa2Playable.length === 50, `Expected 50 SA2 bank items, received ${sa2Playable.length}`)
+assert(midtermPlayable.length === 89, `Expected 89 Midterm bank items, received ${midtermPlayable.length}`)
 for (const record of included) assert(record.canonicalQuestionId && ids.has(record.canonicalQuestionId), `Included source has no canonical question: ${record.assessment} ${record.sourceNumber}`)
 for (const record of curationRecords.filter((item) => item.status === 'duplicate')) assert(record.duplicateOf && ids.has(record.duplicateOf), `Duplicate source has an invalid target: ${record.assessment} ${record.sourceNumber}`)
 for (const record of curationRecords.filter((item) => item.status === 'excluded')) assert(record.exclusionReason, `Excluded source has no reason: ${record.assessment} ${record.sourceNumber}`)

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Revwi Void - Planet dock</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0B0F17;
+      color: #E8EDF5;
+      min-height: 100vh;
+    }
+    .deck {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid #1E293B;
+    }
+    .logo { font-weight: 600; letter-spacing: -0.02em; }
+    .main {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: calc(100vh - 64px);
+    }
+    .mirror {
+      padding: 24px;
+      border-right: 1px solid #1E293B;
+    }
+    .mirror h2 { font-size: 14px; margin-bottom: 12px; color: #94A3B8; }
+    .mirror a {
+      display: block;
+      color: #2457C5;
+      text-decoration: none;
+      padding: 8px 0;
+      font-size: 15px;
+    }
+    .stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .planet {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #08756B, #0B0F17 70%);
+      box-shadow: 0 0 80px rgba(8, 117, 107, 0.35);
+    }
+    .title { margin-top: 24px; text-align: center; }
+    .title h1 { font-size: 28px; font-weight: 600; }
+    .title p { color: #94A3B8; margin-top: 8px; }
+    .orbit {
+      position: absolute;
+      width: 420px;
+      height: 220px;
+      border: 1px dashed #334155;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -55%);
+    }
+    .moon {
+      position: absolute;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #1E293B;
+      border: 2px solid #2457C5;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4px;
+    }
+    .moon.locked { opacity: 0.4; border-style: dashed; border-color: #475569; }
+    .m1 { top: 0; left: 50%; transform: translate(-50%, -50%); }
+    .m2 { top: 35%; right: 0; transform: translate(50%, -50%); }
+    .m3 { bottom: 0; left: 50%; transform: translate(-50%, 50%); }
+    .m4 { top: 35%; left: 0; transform: translate(-50%, -50%); }
+    .m5 { top: 15%; left: 20%; }
+  </style>
+</head>
+<body>
+  <header class="deck">
+    <div class="logo">Revwi</div>
+    <div>Settings</div>
+  </header>
+  <div class="main">
+    <nav class="mirror" aria-label="Route list">
+      <h2>Assessments</h2>
+      <a href="#">SA1 (locked)</a>
+      <a href="#">SA2</a>
+      <a href="#">Midterm Exam</a>
+      <a href="#">SA3 (locked)</a>
+      <a href="#">Final Exam (locked)</a>
+    </nav>
+    <div class="stage">
+      <div class="orbit"></div>
+      <div class="moon m1 locked">SA1</div>
+      <div class="moon m2">SA2</div>
+      <div class="moon m3">Midterm</div>
+      <div class="moon m4 locked">SA3</div>
+      <div class="moon m5 locked">Final</div>
+      <div class="planet"></div>
+      <div class="title">
+        <h1>DEVELOPMENT NETWORK</h1>
+        <p>IT0123 · 3rd Year</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

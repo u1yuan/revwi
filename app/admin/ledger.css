@@ -1,0 +1,37 @@
+.ledger { min-height: 100dvh; background: #f4f7fb; color: #14243a; padding: clamp(16px, 4vw, 40px); font-family: Arial, sans-serif; }
+.ledger-shell { max-width: 1180px; margin: auto; }
+.ledger-header, .ledger-section-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.ledger-header { margin-bottom: 28px; }
+.ledger-header h1 { font-size: clamp(26px, 3vw, 38px); margin: 4px 0 0; }
+.ledger-brand { color: #2457c5; font-weight: 800; letter-spacing: .04em; margin: 0; }
+.ledger-header nav { display: flex; flex-wrap: wrap; gap: 16px; }
+.ledger a { color: #2457c5; }
+.ledger-panel { background: #fff; border: 1px solid #d8e0ea; border-radius: 12px; padding: clamp(16px, 3vw, 28px); margin-bottom: 20px; }
+.ledger-panel h2 { margin: 0 0 14px; font-size: 22px; }
+.ledger-panel h3 { margin: 0 0 12px; font-size: 17px; }
+.ledger-panel p { color: #43546a; line-height: 1.45; }
+.ledger-message { background: #e7f2ed; border: 1px solid #8fb9a5; border-radius: 8px; padding: 12px 16px; }
+.ledger-error { background: #fff0f2; border-color: #cf92a0; }
+.ledger-table-scroll { overflow-x: auto; }
+.ledger table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.ledger th, .ledger td { padding: 12px 10px; border-bottom: 1px solid #e5eaf1; text-align: left; vertical-align: top; }
+.ledger th { color: #43546a; white-space: nowrap; }
+.ledger-form, .ledger-inline { display: flex; gap: 14px; flex-wrap: wrap; align-items: end; }
+.ledger-form { flex-direction: column; align-items: stretch; }
+.ledger-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 14px; }
+.ledger label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 650; min-width: min(100%, 200px); }
+.ledger input, .ledger select, .ledger textarea { background: #fff; color: #14243a; border: 1px solid #9babbd; border-radius: 8px; padding: 10px 12px; font: inherit; font-weight: 400; width: 100%; min-width: 0; }
+.ledger textarea { resize: vertical; line-height: 1.45; }
+.ledger button, .ledger-button { display: inline-flex; align-items: center; justify-content: center; background: #2457c5; color: #fff !important; border: 0; border-radius: 8px; padding: 11px 17px; font: inherit; font-weight: 750; cursor: pointer; text-decoration: none; width: fit-content; }
+.ledger button:disabled { background: #9daabd; cursor: not-allowed; }
+.ledger button:focus-visible, .ledger a:focus-visible, .ledger input:focus-visible, .ledger select:focus-visible, .ledger textarea:focus-visible, .ledger summary:focus-visible { outline: 3px solid #2457c5; outline-offset: 2px; }
+.ledger-details { margin-top: 16px; border-top: 1px solid #e5eaf1; padding-top: 14px; }
+.ledger-details summary { cursor: pointer; color: #2457c5; font-weight: 700; }
+.ledger-details .ledger-form { margin-top: 16px; }
+.ledger-status { text-transform: capitalize; font-weight: 750; }
+.ledger-published { color: #08756b; }
+.ledger-verified { color: #735910; }
+.ledger-draft { color: #53647a; }
+.ledger-bank-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 14px; }
+.ledger-bank-item { border: 1px solid #d8e0ea; border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+@media (max-width: 390px) { .ledger { padding: 14px; } .ledger-header nav, .ledger-inline, .ledger-inline label { width: 100%; } .ledger-inline button { width: 100%; } }

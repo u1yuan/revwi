@@ -1,0 +1,18 @@
+@import '../src/styles.css';
+
+:root {
+  --void-bg: #0b0f17;
+  --void-ink: #e8edf5;
+  --void-muted: #94a3b8;
+  --void-border: #1e293b;
+}
+
+body.void-surface {
+  background: var(--void-bg);
+  color: var(--void-ink);
+}
+
+body.chronicle-surface {
+  background: #f4f7fb;
+  color: #14243a;
+}
