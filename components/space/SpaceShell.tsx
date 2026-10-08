@@ -1,47 +1,31 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { useState } from 'react'
 import { FlightDeck } from './FlightDeck'
 import { RouteMirror, type MirrorLink } from './RouteMirror'
-import type { VoidScene } from './VoidCanvas'
+import type { GroveScene } from './GroveCanvas'
+import './grove.css'
 
-const VoidCanvas = dynamic(() => import('./VoidCanvas').then((m) => m.VoidCanvas), { ssr: false })
+const GroveCanvas = dynamic(() => import('./GroveCanvas').then((m) => m.GroveCanvas), { ssr: false })
 
-export function SpaceShell({
-  scene,
-  planetColor,
-  mirrorTitle,
-  mirrorLinks,
-  children,
-}: {
-  scene: VoidScene
-  planetColor?: string
+export function SpaceShell({ scene, context, mirrorTitle, mirrorLinks, children }: {
+  scene: GroveScene
+  context?: string
   mirrorTitle: string
   mirrorLinks: MirrorLink[]
-  children?: React.ReactNode
+  children: React.ReactNode
 }) {
+  const [listOpen, setListOpen] = useState(false)
   return (
-    <div className="void-surface" style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
-      <FlightDeck />
-      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'minmax(280px, 320px) 1fr' }}>
-        <RouteMirror title={mirrorTitle} links={mirrorLinks} />
-        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
-          <VoidCanvas scene={scene} planetColor={planetColor} />
-          {children ? (
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 24,
-                left: 24,
-                right: 24,
-                pointerEvents: 'none',
-              }}
-            >
-              {children}
-            </div>
-          ) : null}
-        </div>
-      </div>
+    <div className={`grove-surface grove-${scene}`}>
+      <FlightDeck context={context} listOpen={listOpen} onToggleList={() => setListOpen((value) => !value)} />
+      <main className="grove-main">
+        <div className="grove-sky" aria-hidden="true" />
+        <div className="grove-canvas" aria-hidden="true"><GroveCanvas scene={scene} /></div>
+        <div className="grove-content">{children}</div>
+      </main>
+      <RouteMirror title={mirrorTitle} links={mirrorLinks} open={listOpen} onClose={() => setListOpen(false)} />
     </div>
   )
 }

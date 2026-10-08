@@ -54,10 +54,15 @@ export function complete(question: Question, answer: Response): boolean {
     : answer.length === (question.type === 'single' ? 1 : question.correct.length)
 }
 
-export function score(question: Question, answer: Response): boolean {
-  if (!complete(question, answer)) return false
-  if (question.type === 'matching') return question.pairs.every((pair, index) => answer[index] === pair.target)
-  return answer.length === question.correct.length && question.correct.every((value) => answer.includes(value))
+export function score(question: Question | { type: 'single' | 'multiple' | 'matching'; choices?: string[]; pairs?: { term: string }[]; requiredCount?: number }, answer: Response, privateKey?: number[]): boolean {
+  const correct = privateKey ?? (question.type === 'matching'
+    ? (question.pairs as { target: number }[]).map((pair) => pair.target)
+    : (question as Question & { correct: number[] }).correct)
+  if (!Array.isArray(correct)) return false
+  const expectedLength = question.type === 'matching' ? question.pairs?.length : correct.length
+  if (answer.length !== expectedLength || new Set(answer).size !== answer.length && question.type !== 'matching') return false
+  if (question.type === 'matching') return correct.every((value, index) => answer[index] === value)
+  return correct.every((value) => answer.includes(value))
 }
 
 export function answerText(question: Question, answer: Response): string {
